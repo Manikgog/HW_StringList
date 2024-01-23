@@ -295,4 +295,5 @@ public class StringArrayListTest {
 
         Assertions.assertFalse(stringArrayList.equals(stringList1));
     }
+
 }
