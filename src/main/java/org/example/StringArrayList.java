@@ -13,7 +13,7 @@ public class StringArrayList implements StringList {
         array = new String[capacity];
     }
 
-    private String[] addCapacity() {
+    private String[] grow() {
         capacity = ((capacity * 3) / 2) + 1;
         String[] newArray = new String[capacity];
         for (int i = 0; i < this.array.length; i++) {
@@ -28,7 +28,7 @@ public class StringArrayList implements StringList {
             throw new NullParameterException("Переданный параметр равен null.");
         }
         if (size == capacity) {
-            array = addCapacity();
+            array = grow();
             size++;
             array[size - 1] = str;
             return str;
@@ -48,7 +48,7 @@ public class StringArrayList implements StringList {
             throw new IndexOutOfBoundsException();
         }
         if(size == capacity){
-            array = addCapacity();
+            array = grow();
         }
         size++;
         for (int i = size - 1; i > index; i--) {
@@ -57,7 +57,7 @@ public class StringArrayList implements StringList {
             array[i - 1] = tmp;
         }
         array[index] = item;
-        return new String(item);
+        return item;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class StringArrayList implements StringList {
             throw new IndexOutOfBoundsException();
         }
         array[index] = item;
-        return new String(item);
+        return item;
     }
 
     @Override
@@ -89,11 +89,10 @@ public class StringArrayList implements StringList {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
-        String item = new String(array[index]);
+        String item = array[index];
         array[index] = null;
         if (index < size - 1) {
             for (int j = index + 1, i = index; j < size; j++, i++) {
-                String tmp = array[i];
                 array[i] = array[j];
                 array[j] = null;
             }
@@ -113,12 +112,61 @@ public class StringArrayList implements StringList {
         if(item == null){
             throw new NullParameterException("Переданный параметр равен null.");
         }
-        for (int i = 0; i < size; i++) {
-            if(array[i].equals(item)){
+        String[] arr = Arrays.copyOf(array, size);
+        quickSort(arr, 0, arr.length - 1);
+
+        return isExist(arr, item);
+    }
+
+    public boolean isExist(String[] arr, String element) {
+        int min = 0;
+        int max = arr.length - 1;
+
+        while (min <= max) {
+            int mid = (min + max) / 2;
+
+            if (element.compareTo(arr[mid]) == 0) {
                 return true;
+            }
+
+            if (element.compareTo(arr[mid]) < 0) {
+                max = mid - 1;
+            } else {
+                min = mid + 1;
             }
         }
         return false;
+    }
+
+    private void quickSort(String[] arr, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(arr, begin, end);
+
+            quickSort(arr, begin, partitionIndex - 1);
+            quickSort(arr, partitionIndex + 1, end);
+        }
+    }
+
+    private int partition(String[] arr, int begin, int end) {
+        String pivot = arr[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            int resultOfCompare = arr[j].compareTo(pivot);
+            if (resultOfCompare <= 0) { // arr[j] <= pivot
+                i++;
+                swapElements(arr, i, j);
+            }
+        }
+
+        swapElements(arr, i + 1, end);
+        return i + 1;
+    }
+
+    private void swapElements(String[] arr, int left, int right) {
+        String temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
     }
 
     @Override
@@ -152,7 +200,7 @@ public class StringArrayList implements StringList {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
-        return new String(array[index]);
+        return array[index];
     }
 
     @Override
@@ -160,16 +208,12 @@ public class StringArrayList implements StringList {
         if(otherList == null){
             throw new NullParameterException("Переданный параметр равен null.");
         }
-        return Arrays.equals(array, otherList.toArray());
+        String[] arrString = Arrays.copyOf(array, size);
+        return Arrays.equals(arrString, otherList.toArray());
     }
 
     private void shrinkToSize() {
         capacity = size;
-        String[] newArray = new String[size];
-        for (int i = 0; i < size; i++) {
-            newArray[i] = array[i];
-        }
-        array = newArray;
     }
 
     @Override
@@ -191,11 +235,7 @@ public class StringArrayList implements StringList {
 
     @Override
     public String[] toArray() {
-        String[] result = new String[size];
-        for (int i = 0; i < size; i++) {
-            result[i] = array[i];
-        }
-        return result;
+        return Arrays.copyOf(array, size);
     }
 
 }

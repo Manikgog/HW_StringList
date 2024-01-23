@@ -278,4 +278,21 @@ public class StringArrayListTest {
 
         Assertions.assertTrue(Arrays.equals(Constants.arrayStringsWithEqualsStrings, stringArrayList.toArray()));
     }
+
+    @Test
+    public void equals_Test(){
+        StringList stringList = new StringArrayList();
+        StringList stringList1 = new StringArrayList();
+        for (int i = 0; i < Constants.arrayStrings.length; i++) {
+            stringArrayList.add(Constants.arrayStrings[i]);
+            stringList.add(Constants.arrayStrings[i]);
+        }
+        for (int i = 0; i < Constants.arrayStringsWithEqualsStrings.length; i++) {
+            stringList1.add(Constants.arrayStringsWithEqualsStrings[i]);
+        }
+
+        Assertions.assertTrue(stringArrayList.equals(stringList));
+
+        Assertions.assertFalse(stringArrayList.equals(stringList1));
+    }
 }
